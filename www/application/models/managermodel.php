@@ -37,7 +37,16 @@ class ManagerModel extends BaseModel {
             throw new Exception("密码错误！");
         }
 
-        $session_data = array('manager_id' => $user->id, 'login_name' => $user->login_name);
+        $session_data = array(
+            'manager_id' => $user->id, 
+            'login_name' => $user->login_name
+        );
+
+        if (!empty($user->roles)) {
+            $this->load->model('RoleModel');
+            $roles = explode(',', $user->roles);
+            $session_data['permissions'] = $this->RoleModel->getPermissions($roles);
+        }
 
         $this->session->set_userdata($session_data);
 

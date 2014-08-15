@@ -15,9 +15,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-create database hskit character set utf8 collate utf8_general_ci;
-grant all privileges on hskit.* to hskit@localhost identified by 'db.hskit';
-flush privileges;
+CREATE DATABASE hskit character SET utf8 collate utf8_general_ci;
+GRANT ALL PRIVILEGES ON hskit.* TO hskit@localhost IDENTIFIED BY 'db.hskit';
+FLUSH PRIVILEGES;
+
+USE hskit;
 
 --
 -- Table structure for table `managers`
@@ -47,6 +49,48 @@ LOCK TABLES `managers` WRITE;
 INSERT INTO `managers` VALUES (1,'root','1','ade66e80dd4cbd0f79c56122c61cddde',1,'2013-07-18 04:00:00','2013-07-18 04:00:00');
 /*!40000 ALTER TABLE `managers` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Table structure for table `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `roles` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) DEFAULT NULL,
+  `allow` text,
+  `deny` text,
+  `desc` text COMMENT '角色说明',
+  `created` int(10) unsigned NOT NULL,
+  `modified` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `menus`
+--
+
+DROP TABLE IF EXISTS `menus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `menus` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` tinyint(4) DEFAULT '0',
+  `pid` int(11) DEFAULT '0',
+  `text` varchar(60) DEFAULT NULL COMMENT '显示文本',
+  `icon` varchar(100) NOT NULL DEFAULT 'list' COMMENT '图标类名后缀 比如trash',
+  `url` varchar(250) DEFAULT NULL COMMENT '地址，如果有子类会被忽略',
+  `target` varchar(20) DEFAULT NULL,
+  `order_no` int(10) unsigned NOT NULL DEFAULT '1000',
+  PRIMARY KEY (`id`),
+  KEY `pid_idx` (`pid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `sessions`
