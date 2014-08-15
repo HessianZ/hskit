@@ -1,0 +1,23 @@
+#topnav { background: #333; margin-bottom: 20px; box-shadow: 0 2px 5px #999; }
+#topnav .brand { color: #efefef; text-shadow: 0 1px 0 #000; }
+#topnav .nav>li>a { color: white; text-shadow: 0 1px 0 #000;  }
+#topnav .nav>.active>a { color: #666; text-shadow: 0 1px 0 #fff;  }
+#topnav .caret { border-top-color: #fff; border-bottom-color: #fff }
+#topnav .open .icon-user { background-image: url(../img/glyphicons-halflings.png) }
+#topnav .open .caret { border-top-color: #666; border-bottom-color: #666 }
+#topnav ul li.open>a { color: #666; text-shadow: 0 1px 0 #fff }
+
+body>#container { min-height: 600px }
+
+.pagination .jump { padding-left: 5px; vertical-align: top; margin: 0 }
+.pagination .jump input[type=text] { width: 2.2em }
+
+.dt_loading { position: absolute; float: left; top: 0; left: 0; width: 100%; height: 100%; min-height: 100px; background: url(../img/loading_bar.gif) no-repeat center; }
+
+.list_table th i.order { cursor: pointer }
+.list_table tr.selected>td,
+.list_table tr.selected:hover>td { background-color: #B8E834 }
+.form-horizonta.compat .control-group { margin-bottom: 5px; }
+.form-horizontal.compat .controls { margin-left: 170px; }
+
+#footer { color: #666 }
