@@ -1,7 +1,7 @@
 -- 角色
 INSERT INTO `roles` VALUES 
 (1,'Administrator','ALL','NONE',NULL,1407995959,1407995959),
-(2,'Manager','ALL','manager/*',NULL,1407995959,1407995959);
+(2,'Manager','ALL','manager/*|role/*',NULL,1407995959,1407995959);
 
 
 -- 菜单
