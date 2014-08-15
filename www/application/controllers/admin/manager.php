@@ -64,7 +64,8 @@ class Manager extends HS_Controller {
     function addform() {
         $this->load->helper('form');
 
-        $roles = array_keys(ACL::$permissions);
+        $this->load->model('RoleModel');
+        $roles = $this->RoleModel->getAll();
 
         $this->load->view('manager/form', array('roles' => $roles));
     }
@@ -75,7 +76,8 @@ class Manager extends HS_Controller {
 
         $manager = $this->ManagerModel->get($id);
 
-        $roles = array_keys(ACL::$permissions);
+        $this->load->model('RoleModel');
+        $roles = $this->RoleModel->getAll();
 
         $this->load->view('manager/form', array('roles' => $roles, 'manager' => $manager));
     }

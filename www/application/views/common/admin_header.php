@@ -6,15 +6,14 @@
         <base href='<?= base_url() ?>'/>
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="css/admin.css" rel="stylesheet" media="screen">
+        <link rel="stylesheet" type="text/css" href="css/datepicker.css" />
         <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
         <script type="text/javascript" src="js/data_table.js"></script>
         <script type="text/javascript" src="js/common.js"></script>
-
         <script type="text/javascript" src="js/jquery.tagsinput.min.js"></script>
         <link rel="stylesheet" href="css/jquery.tagsinput.css" type="text/css" />
-
-
         <script type="text/javascript" src="js/select2.min.js"></script>
         <script src="js/select2_locale_zh-CN.js"></script>
         <link rel="stylesheet" type="text/css" href="css/select2.css" />
@@ -28,36 +27,29 @@
         </style> 
     </head>
 <?php
-$RTR = & load_class('Router', 'core');
-$controller = $RTR->fetch_class();
-$method = $RTR->fetch_method();
+$controller = $this->router->fetch_class();
+$method = $this->router->fetch_method();
+$this->load->model('MenuModel');
+$CI = &get_instance();
 
-$CI = & get_instance();
-$CI->load->library('ACL');
-
-$menus = array(
-    array(
-        "text" => "后台用户管理",
-        "url" => "/admin/manager",
-    ),
-);
+$menus = $CI->MenuModel->getHieraticalMenus();
 
 foreach ($menus as $key => $menu) {
-    if (!isset($menu['submenu'])) {
-        $url = explode('/', $menu['url']);
-        $method = isset($url[3]) ? $url[3] : 'index';
-        if (!$CI->acl->canAccess($url[2], $method)) {
+    if (!isset($menu->submenu)) {
+        $url = explode('/', $menu->url);
+        $act = isset($url[3]) ? $url[3] : 'index';
+        if (!$CI->acl->canAccess($url[2], $act)) {
             unset($menus[$key]);
         }
     } else {
-        foreach ($menu['submenu'] as $sub => $submenu) {
-            $url = explode('/', $submenu['url']);
-            $method = isset($url[3]) ? $url[3] : 'index';
-            if (!$CI->acl->canAccess($url[2], $method)) {
-                unset($menus[$key]['submenu'][$sub]);
+        foreach ($menu->submenu as $sub => $submenu) {
+            $url = explode('/', $submenu->url);
+            $act = isset($url[3]) ? $url[3] : 'index';
+            if (!$CI->acl->canAccess($url[2], $act)) {
+                unset($menu->submenu[$sub]);
             }
         }
-        if (empty($menus[$key]['submenu'])) {
+        if (empty($menu->submenu)) {
             unset($menus[$key]);
         }
     }
@@ -66,19 +58,25 @@ foreach ($menus as $key => $menu) {
     <body>
         <div id="topnav">
             <div class="container navbar navbar-static-top">
-                <a class="brand" href="#">BRAND NAME</a>
+                <a class="brand" href="/admin/home">DMP</a>
                 <ul class="nav">
-                    <li class="<?= $controller == "home" ? "active" : "" ?>"><a href="/admin/home">首页</a></li>
-                <?php foreach ($menus as $menu) : ?>
+                <?php 
+                foreach ($menus as $menu) : 
+                    $act = '';
+                    @list(,, $ctrl, $act) = explode('/', $menu->url);
+                    $act = $act ?: 'index';
+                ?>
                     
-                    <?php if (!isset($menu['submenu'])) : ?>
-                        <li class="<?= in_array($controller,explode('/', $menu['url'])) ? 'active' : ''; ?>" ><a href="<?= $menu['url']; ?>" ><?= $menu['text']; ?></a></li>
+                    <?php if (!isset($menu->submenu)) : ?>
+                    <li class="<?= ($ctrl == $controller && $act == $method) ? 'active' : ''; ?>" >
+                        <a href="<?= $menu->url ?>" ><? if(!empty($menu->icon)) { ?><i class="icon-<?=$menu->icon?> icon-white"></i> <? } ?><?= $menu->text ?></a>
+                    </li>
                     <?php else : ?>
                     <li class="dropdown">
-                        <a id=<?= $menu['id']; ?> href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><?= $menu['text']; ?><b class="caret"></b></a>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="<?= $menu['id']; ?>">
-                        <?php foreach ($menu['submenu'] as $submenu) : ?>
-                            <li role="presentation"><a href="<?= site_url($submenu['url']); ?>"><?= $submenu['text']; ?></a></li>
+                        <a id=<?= $menu->id ?> href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><? if(!empty($menu->icon)) { ?><i class="icon-<?=$menu->icon?> icon-white"></i> <? } ?><?= $menu->text ?><b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="<?= $menu->id; ?>">
+                        <?php foreach ($menu->submenu as $submenu) : ?>
+                            <li role="presentation"><a href="<?= site_url($submenu->url); ?>"><? if(!empty($submenu->icon)) { ?><i class="icon-<?=$submenu->icon?>"></i> <? } ?><?= $submenu->text ?></a></li>
                         <?php endforeach; ?>
                         </ul>
                     </li>

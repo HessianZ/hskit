@@ -21,7 +21,7 @@ class HS_Controller extends CI_Controller
         {
             $this->is_cache = false;
             $this->load->library('session');
-            $id = $this->session->userdata('manager_id');
+            $id = $this->_getUid();
 
             if (empty($id))
                 $this->_error("请先<a href='" . site_url('/auth') . "'>登陆</a>后再进行访问", 500,

@@ -13,7 +13,7 @@
         <div class="controls">
         <?php $user_roles = explode(',', @$manager->roles); ?>
         <?php foreach ($roles as $role) : ?>
-            <label class="checkbox"><input type="checkbox" name="roles[]" value="<?= $role ?>" <?= in_array($role, $user_roles)? 'checked' : ''; ?> ><?= $role ?></label>
+            <label class="checkbox"><input type="checkbox" name="roles[]" value="<?= $role->id ?>" <?= in_array($role->id, $user_roles)? 'checked' : ''; ?> ><?= $role->name ?></label>
         <?php endforeach; ?>
         </div>
     </div>
