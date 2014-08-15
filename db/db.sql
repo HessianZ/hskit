@@ -44,7 +44,7 @@ CREATE TABLE `managers` (
 
 LOCK TABLES `managers` WRITE;
 /*!40000 ALTER TABLE `managers` DISABLE KEYS */;
-INSERT INTO `managers` VALUES (1,'root','Administrator','ade66e80dd4cbd0f79c56122c61cddde',1,'2013-07-18 04:00:00','2013-07-18 04:00:00');
+INSERT INTO `managers` VALUES (1,'root','1','ade66e80dd4cbd0f79c56122c61cddde',1,'2013-07-18 04:00:00','2013-07-18 04:00:00');
 /*!40000 ALTER TABLE `managers` ENABLE KEYS */;
 UNLOCK TABLES;
 
