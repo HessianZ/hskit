@@ -2,18 +2,8 @@
 
 define('FCPATH', dirname(__DIR__));
 define('BASEPATH', FCPATH . "/system/");
-define('HOSTNAME', `hostname`);
 
 class HTTPException extends Exception { };
-
-$json_errors = array(
-    JSON_ERROR_NONE             => null,
-    JSON_ERROR_DEPTH            => 'Maximum stack depth exceeded',
-    JSON_ERROR_STATE_MISMATCH   => 'Underflow or the modes mismatch',
-    JSON_ERROR_CTRL_CHAR        => 'Unexpected control character found',
-    JSON_ERROR_SYNTAX           => 'Syntax error, malformed JSON',
-    JSON_ERROR_UTF8             => 'Malformed UTF-8 characters, possibly incorrectly encoded'
-);
 
 function db_connect($config_name = 'default') {
     require FCPATH . "/application/config/database.php";
@@ -32,15 +22,6 @@ function dbo_connect($config_name = 'default') {
     $config = $db[$config_name];
 
     return DBO::create($config['hostname'], $config['username'], $config['password'], $config['database'], $config['char_set']);
-}
-
-function js_parse($ad, $str) {
-    $str = str_replace("%CLICKCOUNT%", $ad->click_count, $str);
-    $str = str_replace("%TIME%", $ad->expires, $str);
-    $str = str_replace("%URL%", "http://" . HOSTNAME . "/sad/go/" . $ad->id, $str);
-    $str = str_replace("%YURL%", $ad->origin, $str);
-
-    return $str;
 }
 
 function download($url, $file = null) {
