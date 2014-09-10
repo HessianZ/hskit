@@ -77,7 +77,11 @@ var DataTable = function(dtId)
             _multiple = false,
             _multipage = true,
             _row_id_template = "",
-            _layout = 'auto';
+            _layout = 'auto',
+            _ischeck = true,
+            _more = true,
+            _field = '',
+            _tableColumns = [];
 
     DataTable.instances[_id] = this;
 
@@ -105,7 +109,19 @@ var DataTable = function(dtId)
         }
 
         $('#' + _id).siblings('div.dt_loading').remove();
-    }
+    },
+
+    setCookie = function (name,value){
+        document.cookie = name + "="+ escape (value) + ";path=" + window.location.pathname;
+    },
+
+    getCookie = function (name){
+        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+        if(arr=document.cookie.match(reg))
+            return (arr[2]);
+        else
+            return null;
+    };
 
     /**
      * 设置请求URL。
@@ -166,17 +182,29 @@ var DataTable = function(dtId)
     }
 
     /**
+     * 设置可以排序的字段。
+     * @param field 字段名
+     * @param dir 排序方向 asc=升序（默认），desc=降序
+     */
+
+    this.setSortableColumns = function(arr){
+        _tableColumns = arr;
+    }
+
+    /**
      * 设置排序字段。
      * @param field 字段名
      * @param dir 排序方向 asc=升序（默认），desc=降序
      */
     this.setOrderField = function(field, dir) {
+        _orders = {};
         if (typeof field == 'object') {
             _orders = field;
             return;
         }
-
+        _field = field;
         _orders[field] = dir == "desc" ? "desc" : "asc";
+
     }
 
     /**
@@ -213,7 +241,15 @@ var DataTable = function(dtId)
      */
     this.setLoadCount = function(count)
     {
-        _count = parseInt(count);
+        var userCount = getCookie('LoadCount'+_id);
+        if(userCount)
+            _count = parseInt(userCount);
+        else
+            _count = parseInt(count);
+    }
+
+    this.setMultiSortable = function(y){
+        _more = y && true;
     }
 
     /**
@@ -232,6 +268,14 @@ var DataTable = function(dtId)
     this.setLayout = function(layout)
     {
         _layout = layout;
+    }
+
+    /**
+     * 设置表格是否支持单击选中。
+     * @param {Boolean} v true|false
+     */
+    this.setSelectable = function(c){
+        _ischeck = c && true;
     }
 
     /**
@@ -375,13 +419,13 @@ var DataTable = function(dtId)
      */
     this.render = function()
     {
-        var html = "<table cellspacing='0' cellpadding='0' class='list_table table table-hover table-bordered' id='" + _id + "'";
+        var html = "<table cellspacing='0' cellpadding='0' class='list_table table table-hover table-bordered table-striped' id='" + _id + "'";
         var columnCount = 0;
 
         if (_width != null)
             html += " width='" + _width + "' ";
 
-        html += ">";
+        html += " style='width:" + _width + "'>";
 
         // 表头
         html += "<thead>";
@@ -390,14 +434,20 @@ var DataTable = function(dtId)
             if (_columns[i].visible) {
 
                 var order = "";
-                if (_orders[_columns[i].field] == "asc")
-                    order = "up";
-                else if (_orders[_columns[i].field] == "desc")
-                    order = "down";
+                for(var k = 0, tl = _tableColumns.length; k < tl; k++){
+                    if (_more && _columns[i].field == _tableColumns[k]) 
+                    order = "icon-minus";
+                }
+                
+                if (_orders[_columns[i].field] == "asc" && _columns[i].field == _field)
+                    order = "icon-chevron-up";
+                else if (_orders[_columns[i].field] == "desc" && _columns[i].field == _field)
+                    order = "icon-chevron-down";
 
                 if (order)
-                    order = '<i class="order icon-chevron-' + order + ' pull-right"></i>';
+                    order = '<i class="order ' + order + ' pull-right"></i>';
 
+                
                 var width = _columns[i].width ? "width='" + _columns[i].width + "'" : "";
                 html += "<th " + width + " field=" + _columns[i].field + ">" + _columns[i].text + order + "</th>";
 
@@ -407,6 +457,21 @@ var DataTable = function(dtId)
         html += "</tr></thead><tbody></tbody></table>";
 
         var table = $(html);
+
+        if(_more){
+            table.find('.order').each(function(i){
+                var cl;
+                $(this).hover(function(){
+                    cl = $(this).attr("class");
+                    if(cl == "order icon-chevron-down pull-right" || cl == "order icon-chevron-up pull-right")
+                        return;
+                    
+                    $(this).attr("class", "order icon-chevron-down pull-right");
+                },function(){
+                    $(this).attr("class", cl);
+                })
+            })
+        }
 
         if (_layout != 'auto')
             table.css("table-layout", _layout);
@@ -506,12 +571,14 @@ var DataTable = function(dtId)
 
         table.find("thead th .order").click(function() {
             var $this = $(this);
+
             if ($this.hasClass("icon-chevron-up"))
                 _self.setOrderField($this.parent().attr("field"), "desc");
             else if ($this.hasClass("icon-chevron-down"))
                 _self.setOrderField($this.parent().attr("field"), "asc");
-            else
+            else{
                 return;
+            }
 
             _self.reload();
         });
@@ -520,6 +587,10 @@ var DataTable = function(dtId)
             var tagName = e.target.tagName.toLowerCase();
             if (tagName == "input" || tagName == "button" || tagName == "a")
                 return;
+
+            if(!_ischeck) {
+                return;
+            }
 
             if (!_multiple) {
                 $(this).toggleClass("selected");
@@ -547,12 +618,75 @@ var DataTable = function(dtId)
                 _rowDblClickEvent.apply(this, [_data.rows[$(this).attr("idx")]]);
         });
 
-        $(_containerSelector).empty();
-        $(_containerSelector).append(table);
+        //添加设置按钮
+        var set = "<div class='set_data' title='设置'><i class='icon-edit'></i></div>",
+        setdata = $(set), t;
 
+        setdata.css({position:"absolute", width:"14px", height:"14px", display:"none", top:"-20px", left: _width + "px", cursor:"pointer"});
+    
+        table.hover(function() {
+            var width = $(this).width() - 14;
+            setdata.css('left', width + "px");
+            clearTimeout(t);
+            setdata.show(200);
+
+        },function() {
+
+            t = setTimeout(function() {
+                setdata.hide(200);
+            },1000)
+
+            setdata.hover(function() {
+                clearTimeout(t);
+            },function() {
+
+                t = setTimeout(function() {
+                    setdata.hide(200);
+                },1000)
+
+            })
+        })
+
+        //添加弹出框
+        var form = '<form class="form-horizontal"><div class="control-group"><label class="control-label">显示数量：</label><div class="controls" style="width:270px;"><input type="text" class="shownum" placeholder="请输入正整数" value="'+ _count +'" /></div></div><div class="control-group"><label class="control-label">表格宽度：</label><div class="controls" style="width:270px;"><input type="text" class="tablewidth" placeholder="请输入宽度，以%或px为单位！" value="'+ _width +'" /></div></div><div class="control-group"><input type="button" class="enter btn btn-primary" name="enter" onclick="DataTable.getInstance(\'' + _id + '\').enter({\'num\':$(\'.shownum\').val(), \'width\':$(\'.tablewidth\').val()})" value="确定" style="width:60%" /></form>';
+        
+        setdata.click(function(){
+            $(this).popModal({
+                title: '表格设置'
+            })
+            $(".modal div.text-center").html(form);
+        })
+
+        this.enter = function (arg){
+            if(arg.num == "" || parseInt(arg.num) <= 0){
+                alert("显示数量请填入正整数！")
+                return;
+            }
+
+            if(arg.width.slice(-1) != '%' && arg.width.slice(-2) != "px" || arg.width == ''){
+                alert("表格宽度值请填入数字加单位%或px！")
+                return;
+            }
+
+            $('.modal:visible').modal('hide');
+            
+            setCookie('LoadCount'+_id, arg.num);
+
+            this.setLoadCount(arg.num);
+
+            this.setWidth(arg.width);
+            table.css("width",arg.width);
+            this.reload();
+        }
+        
+        $(_containerSelector).empty();
+        $(_containerSelector).append(setdata);
+        $(_containerSelector).append(table);
         if (_afterRenderEvent)
             _afterRenderEvent.apply(table, [_data]);
     }
+
+    
 
     /**
      * 根据_start 和 _count 以及服务端返回的总数生成分页HTML。
@@ -643,6 +777,7 @@ var DataTable = function(dtId)
 
         this.loadData(page_no * page_size);
     }
+
 }
 
 /**
