@@ -76,10 +76,10 @@
         if (form['data[login_name]'] && form['data[login_name]'].value == '')
             return alert('请输入登录名')
 
-        if (form['data[password]'].value == '')
+        if (form['data[login_name]'] && form['data[password]'].value == '')
             return alert('请输入密码')
 
-        if (form['data[password]'].value != form.repwd.value)
+        if (form['data[password]'].value != '' && form['data[password]'].value != form.repwd.value)
             return alert('重复密码输入错误')
 
         if (!$("[name='roles[]']:checked", form).length)

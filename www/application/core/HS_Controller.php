@@ -29,10 +29,9 @@ class HS_Controller extends CI_Controller
                         
             $url_controller = $this->router->fetch_class();
             $url_method = $this->router->fetch_method();
-    
-            if (!$this->acl->canAccess($url_controller, $url_method))
-            {
-                $this->_error("没有访问权限", 500, '没有访问权限');
+            
+            if (!$this->acl->canAccess($url_controller, $url_method)) {
+                $this->_error( "没有访问权限 <a href='javascript:history.go(-1);'>后退</a> 或者 以其它身份 <a href='".  site_url( '/auth' )."'>登陆</a>", 500, '没有访问权限' );
             }
         }
 
@@ -74,12 +73,7 @@ class HS_Controller extends CI_Controller
     protected function _getLoginName() {
         return $this->session->userdata('login_name');
     }
-    
-    public function _log($log)
-    {   
-        $this->load->helper('log');
-        log_writing($this->_getUid(), $log, 0);
-    }
+
 }
 
 ?>

@@ -58,7 +58,7 @@ foreach ($menus as $key => $menu) {
     <body>
         <div id="topnav">
             <div class="container navbar navbar-static-top">
-                <a class="brand" href="/admin/home">DMP</a>
+                <a class="brand" href="/admin/home">HSKIT</a>
                 <ul class="nav">
                 <?php 
                 foreach ($menus as $menu) : 

@@ -95,7 +95,6 @@ class BaseModel extends CI_Model {
             throw new Exception($this->db->_error_message(), $this->db->_error_number());
         }
 
-
         return $query->result();
     }
 

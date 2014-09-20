@@ -13,7 +13,6 @@ class Manager extends HS_Controller {
     public function query() {
         $this->load->model('ManagerModel');
 
-        $fields = $this->input->post("fields");
         $orders = $this->input->post("orders");
         $count = $this->input->post("count");
         $start = $this->input->post("start");
@@ -66,8 +65,16 @@ class Manager extends HS_Controller {
 
         $this->load->model('RoleModel');
         $roles = $this->RoleModel->getAll();
+        
+        $manager = (object) array(
+            'id' => '',
+            'server_id' => 0,
+            'login_name' => '',
+            'roles' => '',
+            'enabled' => '1',
+        );
 
-        $this->load->view('manager/form', array('roles' => $roles));
+        $this->load->view('manager/form', array('roles' => $roles, 'manager' => $manager));
     }
 
     function editform($id = null) {
@@ -100,6 +107,15 @@ class Manager extends HS_Controller {
         $response = array('status' => 'ok');
 
         try {
+            
+            if (empty($id)) {
+                if (empty($data['password'])) {
+                    throw new Exception('请填写密码');
+                }
+            } else if (empty($data['password'])) {
+                unset($data['password']);
+            }
+            
             $this->ManagerModel->save($data, $id);
         } catch (Exception $e) {
             $response['status'] = 'error';

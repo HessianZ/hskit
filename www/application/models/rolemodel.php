@@ -20,7 +20,7 @@ class RoleModel extends BaseModel
             return array('allow' => array('ALL'), 'deny' => array('NONE'));
         }
 
-        $allow = array('admin', 'manager/chgpwdform', 'manager/chgpwd');
+        $allow = array('home', 'manager/chgpwdform', 'manager/chgpwd');
         $deny  = array();
 
         foreach($role_ids as $role_id) {
