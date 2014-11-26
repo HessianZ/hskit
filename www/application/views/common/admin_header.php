@@ -2,14 +2,14 @@
 <html lang="zh-CN">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>管理后台</title>
+        <title>管理系统</title>
         <base href='<?= base_url() ?>'/>
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="css/admin.css" rel="stylesheet" media="screen">
-        <link rel="stylesheet" type="text/css" href="css/datepicker.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css" />
         <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+        <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/data_table.js"></script>
         <script type="text/javascript" src="js/common.js"></script>
         <script type="text/javascript" src="js/jquery.tagsinput.min.js"></script>

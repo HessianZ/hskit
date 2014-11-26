@@ -109,19 +109,7 @@ var DataTable = function(dtId)
         }
 
         $('#' + _id).siblings('div.dt_loading').remove();
-    },
-
-    setCookie = function (name,value){
-        document.cookie = name + "="+ escape (value) + ";path=" + window.location.pathname;
-    },
-
-    getCookie = function (name){
-        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
-        if(arr=document.cookie.match(reg))
-            return (arr[2]);
-        else
-            return null;
-    };
+    }
 
     /**
      * 设置请求URL。
@@ -241,11 +229,7 @@ var DataTable = function(dtId)
      */
     this.setLoadCount = function(count)
     {
-        var userCount = getCookie('LoadCount'+_id);
-        if(userCount)
-            _count = parseInt(userCount);
-        else
-            _count = parseInt(count);
+        _count = parseInt(count);
     }
 
     this.setMultiSortable = function(y){
@@ -620,30 +604,24 @@ var DataTable = function(dtId)
 
         //添加设置按钮
         var set = "<div class='set_data' title='设置'><i class='icon-edit'></i></div>",
-        setdata = $(set), t;
+        setdata = $(set),
+        t;
 
-        setdata.css({position:"absolute", width:"14px", height:"14px", display:"none", top:"-20px", left: _width + "px", cursor:"pointer"});
+        setdata.css({position:"absolute", width:"50px", height:"40px", display:"none", top:"-20px", left:_width, cursor:"pointer"});
     
-        table.hover(function() {
-            var width = $(this).width() - 14;
-            setdata.css('left', width + "px");
+        table.hover(function(){
             clearTimeout(t);
             setdata.show(200);
-
-        },function() {
-
-            t = setTimeout(function() {
+        },function(){
+            t = setTimeout(function(){
                 setdata.hide(200);
             },1000)
-
-            setdata.hover(function() {
+            setdata.hover(function(){
                 clearTimeout(t);
-            },function() {
-
-                t = setTimeout(function() {
+            },function(){
+                t = setTimeout(function(){
                     setdata.hide(200);
                 },1000)
-
             })
         })
 
@@ -669,9 +647,6 @@ var DataTable = function(dtId)
             }
 
             $('.modal:visible').modal('hide');
-            
-            setCookie('LoadCount'+_id, arg.num);
-
             this.setLoadCount(arg.num);
 
             this.setWidth(arg.width);
@@ -821,4 +796,37 @@ DataTable.DATA_HANDLE_ENABLED = function(url, enabledValue, enableColumn) {
         });
         return a;
     };
+}
+
+DataTable.ENABLED_ACTION = function(url, enabledValue, enableColumn) {
+    return function(  ) {
+         if (typeof enabledValue == "undefined") {
+             enabledValue = 1;
+         }
+
+         if (typeof enableColumn == "undefined") {
+             enableColumn = "enabled";
+         }
+
+         var $this = this;
+         var a = $("<a href=\"javascript:void(0)\" class=\"status \"><i class='icon-ok " + (this[enableColumn] == enabledValue ? "" : "icon-remove") + "'></i></a>").click(function() {
+
+             a.popModal({
+             url: url + '?id=' + $this.id,
+             title: '有效性操作'
+             })
+         });
+         return a;
+     };
+}
+function submitEnableForm(form){
+    $.post(form.action, $(form).serialize(), function(ret) {
+        if (ret.status == "ok"){
+           dt.reload()
+           $('.modal:visible').modal('hide')
+        } else {
+            alert(ret.data)
+        }
+    });
+
 }

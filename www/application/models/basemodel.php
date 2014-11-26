@@ -95,6 +95,7 @@ class BaseModel extends CI_Model {
             throw new Exception($this->db->_error_message(), $this->db->_error_number());
         }
 
+
         return $query->result();
     }
 
@@ -135,7 +136,7 @@ class BaseModel extends CI_Model {
      * @return boolean 成功返回true(Insert返回ID)，否则返回false
      */
     function save($data, $id = null) {
-        if ($id) {
+        if ($id !== '' && $id !== null && $id !== false) {
             $args = func_get_args();
             array_shift($args);
             $params = array_combine($this->pk, $args);

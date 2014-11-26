@@ -8,6 +8,9 @@
      * ====================== */
 
     var PopModal = function(element, options) {
+        var mH = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        mH *= 0.8;
+        mH = parseInt(mH);
         this.options = options
         this.$element = $(element)
         this.$modal = this.create().modal(options).one('show', function() {
@@ -17,6 +20,8 @@
                     typeof options.onload == 'function' && options.onload.call(modal);
                     $(this).find(":text,:password").first().focus()
                 }));
+                if(modal.find(".modal-body>div").height() > mH)
+                    modal.find(".modal-body>div").css({'max-height': mH, 'overflow-y':'scroll'});
             });
         }).on("shown", function() {
             $(this).find(":text,:password").first().focus()
@@ -28,13 +33,14 @@
                 return -($(this).width() / 2);
             }
         });
-        options.height && this.$modal.css('height', options.height).find(".modal-body").css({'max-height': 'none', 'overflow': 'hidden'});
 
         options.destroy && this.$modal.on('hidden', function() {
             $(element).data("popmodal", null);
             $(this).remove();
         })
 
+        
+           // options.height && this.$modal.css('height', options.height).find(".modal-body").css({'max-height': mH, 'overflow-y':'scroll'});
     }
 
     PopModal.prototype = {
@@ -47,14 +53,13 @@
                     '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
                     '<h3>' + this.options.title + '</h3>' +
                     '</div>' +
-                    '<div class="modal-body"><div class="text-center"><img src="/img/loading_bar.gif" /></div></div>' +
+                    '<div class="modal-body" ><div class="text-center"><img src="/img/loading_bar.gif" /></div></div>' +
                     //'<div class="modal-footer">'+
                     //'<a href="javascrip:void(0)" class="btn btn-primary">确定</a>'+
                     //'<a href="javascrip:void(0)" class="btn" data-dismiss="modal">取消</a>'+
                     //'</div>'+
                     '</div>',
                     modal = $(html);
-
 
             return modal;
         }
