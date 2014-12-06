@@ -3,7 +3,8 @@
 class Auth extends HS_Controller {
 
     public function index() {
-        $this->load->view('auth/login');
+        $redirect = $this->input->get_post('redirect');
+        $this->load->view('auth/login', array('redirect' => $redirect));
     }
 
     public function login() {
@@ -11,13 +12,14 @@ class Auth extends HS_Controller {
 
         $login_name = $this->input->post('login_name');
         $password = $this->input->post('password');
+        $redirect = $this->input->get_post('redirect') ?: site_url("/admin/home");
 
         $this->load->model('ManagerModel');
 
         try {
             $this->ManagerModel->login($login_name, $password);
 
-            redirect(site_url("/admin/home"));
+            redirect($redirect);
         } catch (Exception $e) {
             $this->_error($e->getMessage(), 500, '登陆错误');
         }

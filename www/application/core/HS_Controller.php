@@ -22,16 +22,18 @@ class HS_Controller extends CI_Controller
             $this->is_cache = false;
             $this->load->library('session');
             $id = $this->_getUid();
+            
+            $redirect = empty($_SERVER['REQUEST_URI']) ? '' : urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 
             if (empty($id))
-                $this->_error("请先<a href='" . site_url('/auth') . "'>登陆</a>后再进行访问", 500,
+                $this->_error("请先<a href='" . site_url('/auth') . "?redirect=$redirect'>登陆</a>后再进行访问", 500,
                     '没有访问权限');
                         
             $url_controller = $this->router->fetch_class();
             $url_method = $this->router->fetch_method();
             
             if (!$this->acl->canAccess($url_controller, $url_method)) {
-                $this->_error( "没有访问权限 <a href='javascript:history.go(-1);'>后退</a> 或者 以其它身份 <a href='".  site_url( '/auth' )."'>登陆</a>", 500, '没有访问权限' );
+                $this->_error( "没有访问权限 <a href='javascript:history.go(-1);'>后退</a> 或者 以其它身份 <a href='".  site_url( '/auth' )."?redirect=$redirect'>登陆</a>", 500, '没有访问权限' );
             }
         }
 

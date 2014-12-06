@@ -11,6 +11,7 @@
     <body>
         <div class="container">
             <form id="loginform" class="well " name="loginForm" action="<?= site_url('/auth/login') ?>" method="post" autocomplete="off" onsubmit="return checkForm(this);">
+                <input type="hidden" name="redirect" value="<?= $redirect ?>" />
                 <fieldset>
                     <legend>欢迎登录</legend>
                     <div>
